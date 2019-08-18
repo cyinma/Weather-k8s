@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-api-deploy
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: weather-api
+        version: v1
+    spec:
+      containers:
+        - name: weather-api
+          image: asia.gcr.io/YOUR_PROJECT_ID/weather-api:latest-dev
+          imagePullPolicy: Always
+          args: ["-e", "dev"]
+          resources:
+            limits:
+              cpu: 512m
+              memory: 100Mi
+            requests:
+              cpu: 512m
+              memory: 100Mi
+  selector:
+    matchLabels:
+      app: weather-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weather-api-svc
+  labels:
+    app: weather-api
+spec:
+  type: LoadBalancer
+  selector:
+    app: weather-api
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

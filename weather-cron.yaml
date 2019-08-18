@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weather-cron-deploy
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: weather-cron
+        version: v1
+    spec:
+      containers:
+        - name: weather-cron
+          image: asia.gcr.io/YOUR_PROJECT_ID/weather-cron:latest-dev
+          imagePullPolicy: Always
+          args: ["-e", "dev"]
+          resources:
+            limits:
+              cpu: 256m
+              memory: 100Mi
+            requests:
+              cpu: 256m
+              memory: 100Mi
+  selector:
+    matchLabels:
+      app: weather-cron
